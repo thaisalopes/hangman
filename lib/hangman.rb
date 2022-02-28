@@ -35,6 +35,9 @@ class Game
         puts "\nCongratulations, you won!"
       else
       check_lives_left
+        if @lives_left == 0
+          puts "\nOUCH, you're dead :("
+        end
       end
     end
   end
