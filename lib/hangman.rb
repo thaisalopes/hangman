@@ -10,7 +10,8 @@ class Game
     @victory = false
     @game_board = ""
     @game_player = Player.new
-    full_game
+    @lives_left = 6
+    full_game  
   end
 
   def full_game
@@ -20,17 +21,21 @@ class Game
   end
 
   def rounds
-    round_number = 0
-    while @victory == false && round_number<= 10
+    while @victory == false && @lives_left.positive?
+      puts "You have #{@lives_left} lives left."
       @guess = @game_player.make_guess
       @used_letters.push(@guess)
       check_correct_letters
       @incorrect_letters = @used_letters - @correct_letters
-      puts "Correctly guessed: #{@correct_letters}"
-      puts "Incorrect guesses: #{@incorrect_letters}"
+      puts "\nCorrectly guessed: #{@correct_letters.join(", ")}"
+      puts "Incorrect guesses: #{@incorrect_letters.join(", ")}\n"
       check_included
-      puts "You have already tried these letters: #{@used_letters}"
-      round_number+=1
+      @victory = @game_board.check_victory
+      if @victory == true
+        puts "\nCongratulations, you won!"
+      else
+      check_lives_left
+      end
     end
   end
 
@@ -63,6 +68,10 @@ class Game
 
   def check_correct_letters
     @word.include?(@guess) ? @correct_letters.push(@guess) : false
+  end
+
+  def check_lives_left
+    @lives_left = 6 - @incorrect_letters.length
   end
 end
 
@@ -110,6 +119,15 @@ class Board
 
   def show_game_board
     puts @board
+  end
+
+  def check_victory
+    if @board.split('').all? { |space| space != "_"}
+      victory = true
+    else
+      victory = false
+    end
+    victory
   end
 end
 
