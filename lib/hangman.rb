@@ -22,8 +22,8 @@ class Game
 
   def rounds
     while @victory == false && @lives_left.positive?
-      puts "You have #{@lives_left} lives left."
-      @guess = @game_player.make_guess
+      puts "\nYou have #{@lives_left} lives left."
+      @guess = @game_player.make_guess(@used_letters)
       @used_letters.push(@guess)
       check_correct_letters
       @incorrect_letters = @used_letters - @correct_letters
@@ -83,15 +83,18 @@ class Player
     @guess = ""
   end
 
-  def make_guess
-    puts "Make your guess"
+  def make_guess (used_letters)
+    @used_letters = used_letters
+    puts "\nMake your guess\n"
     @guess = gets.chomp
     if @guess.length > 1
-      puts "You should choose one letter only"
-      make_guess
+      puts "You should choose one letter only\n"
+      make_guess(@used_letters)
+    elsif used_letters.include?(@guess)
+      puts "You have already tried this letter, try another one\n"
+      make_guess(@used_letters)
     else
-      puts "Your guess is #{@guess}"
-      return @guess
+      @guess
     end
   end
 end 
