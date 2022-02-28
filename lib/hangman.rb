@@ -5,8 +5,10 @@ class Game
     @word = ""
     @guess = ""
     @used_letters = []
+    @correct_letters = []
+    @incorrect_letters = []
     @victory = false
-    @game_board =""
+    @game_board = ""
     @game_player = Player.new
     full_game
   end
@@ -22,6 +24,10 @@ class Game
     while @victory == false && round_number<= 10
       @guess = @game_player.make_guess
       @used_letters.push(@guess)
+      check_correct_letters
+      @incorrect_letters = @used_letters - @correct_letters
+      puts "Correctly guessed: #{@correct_letters}"
+      puts "Incorrect guesses: #{@incorrect_letters}"
       check_included
       puts "You have already tried these letters: #{@used_letters}"
       round_number+=1
@@ -53,6 +59,10 @@ class Game
     end
     @game_board.show_game_board
     return @game_board
+  end
+
+  def check_correct_letters
+    @word.include?(@guess) ? @correct_letters.push(@guess) : false
   end
 end
 
