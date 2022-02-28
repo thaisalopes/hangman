@@ -49,11 +49,10 @@ class Game
       new_index = index*2 
       if letter == @guess
         @game_board.write_on_board(letter,new_index)
-      else
-        @game_board.show_game_board
       end
-    return @game_board
     end
+    @game_board.show_game_board
+    return @game_board
   end
 end
 
@@ -96,7 +95,6 @@ class Board
     board_array = @board.split('')
     board_array[index] = letter
     @board = board_array.join
-    puts @board
     return @board
   end
 
