@@ -1,17 +1,17 @@
+require "yaml"
+
 class Game
 
   def initialize
-    @dictionary = []
     @word = ""
     @guess = ""
     @used_letters = []
     @correct_letters = []
     @incorrect_letters = []
     @victory = false
-    @game_board = ""
     @game_player = Player.new
     @lives_left = 6
-    full_game  
+    full_game
   end
 
   def full_game
@@ -20,8 +20,24 @@ class Game
     rounds
   end
 
+  def save_game
+    serialized = YAML.dump(self)
+    File.write("hangman_save.yaml", serialized)
+  end
+
+  def self.load_game
+    file = File.read("hangman_save.yaml")
+    game = YAML.load(file)
+    game.rounds
+  end
+
   def rounds
     while @victory == false && @lives_left.positive?
+      puts "\nWould you like to save your game now? (Y/N)"
+      reply = gets.chomp.downcase
+      if reply == "y"
+        save_game
+      end
       puts "\nYou have #{@lives_left} lives left."
       @guess = @game_player.make_guess(@used_letters)
       @used_letters.push(@guess)
@@ -43,11 +59,12 @@ class Game
   end
 
 
-  def choose_word  
+  def choose_word
+    dictionary = []
     File.foreach('google-10000-english-no-swears.txt') do |line|
-      @dictionary.push(line)
+      dictionary.push(line)
     end
-    @word = @dictionary[rand 0..@dictionary.length+1].chomp
+    @word = dictionary[rand 0..dictionary.length+1].chomp
     if @word.length > 12
       choose_word
     elsif @word.length < 5
@@ -86,7 +103,7 @@ class Player
   def make_guess (used_letters)
     @used_letters = used_letters
     puts "\nMake your guess\n"
-    @guess = gets.chomp
+    @guess = gets.chomp.downcase
     if @guess.length > 1
       puts "You should choose one letter only\n"
       make_guess(@used_letters)
@@ -101,8 +118,8 @@ end
 
 class Board
   def initialize (word)
-  @board = ""
-  create_board(word)
+    @board = ""
+    create_board(word)
   end
 
   def create_board(word)
@@ -137,4 +154,13 @@ class Board
   end
 end
 
-Game.new
+
+if File.exist?("hangman_save.yaml")
+  puts "Would you like to load a saved game? (Y/N)"
+  answer = gets.chomp.downcase
+    if answer == "y"
+      Game.load_game
+    else
+      Game.new
+    end
+end
